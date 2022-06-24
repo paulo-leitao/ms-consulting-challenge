@@ -1,43 +1,44 @@
-import { useState } from 'react'
-import logo from './logo.svg'
-import './App.css'
+import React, { useContext } from 'react'
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import Login from './components/pages/login';
+import Home from './components/pages/home';
+import NewTrade from './components/pages/movimentacao';
+import NewUser from './components/pages/new-user';
+import { AuthContext } from './context/AuthContext';
 
-function App() {
-  const [count, setCount] = useState(0)
+const App = () => {
+
+  const {currentUser} = useContext(AuthContext)
+
+  const RequireAuth = ({ children }) => {
+    return currentUser ? children : <Navigate to="/login" />;
+  };
 
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>Hello Vite + React!</p>
-        <p>
-          <button type="button" onClick={() => setCount((count) => count + 1)}>
-            count is: {count}
-          </button>
-        </p>
-        <p>
-          Edit <code>App.jsx</code> and save to test HMR updates.
-        </p>
-        <p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-          {' | '}
-          <a
-            className="App-link"
-            href="https://vitejs.dev/guide/features.html"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Vite Docs
-          </a>
-        </p>
-      </header>
+    <div>
+       <BrowserRouter>
+        <Routes>
+          <Route path="/">
+            <Route path="login" element={<Login />} />
+            <Route
+              index
+              element={
+                <RequireAuth>
+                  <Home />
+                </RequireAuth>
+              }
+            />
+            <Route path="movimentacao" element={
+              <RequireAuth>
+                <NewTrade />
+              </RequireAuth>
+            } />
+            <Route path="new-user" element={
+                <NewUser />
+            } />
+          </Route>
+        </Routes>
+      </BrowserRouter>
     </div>
   )
 }
